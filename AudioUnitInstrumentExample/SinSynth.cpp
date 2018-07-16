@@ -27,6 +27,16 @@
  */
 
 #include "SinSynth.h"
+#include <thread>
+#include <zmq.hpp>
+#include <iostream>
+#include <sweep/sweep.hpp>
+#include <boost/circular_buffer.hpp>
+
+const int buf_size = 128;
+boost::circular_buffer<std::int32_t> c_buf(buf_size);
+float moving_average = 0;
+float beta = 0.9;
 
 static const UInt32 kMaxActiveNotes = 8;
 
@@ -46,6 +56,14 @@ AUDIOCOMPONENT_ENTRY(AUMusicDeviceFactory, SinSynth)
 static const AudioUnitParameterID kGlobalVolumeParam = 0;
 static const CFStringRef kGlobalVolumeName = CFSTR("global volume");
 
+struct thread_aborted{};  // temporary exception class
+std::atomic<bool> exit_flag(false);
+
+void check_exit() {
+    if (exit_flag)
+        throw thread_aborted{};
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //	SinSynth::SinSynth
 //
@@ -58,6 +76,23 @@ SinSynth::SinSynth(AudioUnit inComponentInstance)
     
     Globals()->UseIndexedParameters(1); // we're only defining one param
     Globals()->SetParameter (kGlobalVolumeParam, 1.0);
+    
+    // subscriber Lidar values
+    std::thread subscriber([](){
+        sweep::sweep device{"/dev/cu.usbserial-DM00KVQW"};
+        device.start_scanning();
+        while (true) try {
+            const sweep::scan scan = device.get_scan();
+            for (const sweep::sample& sample : scan.samples) {
+                c_buf.push_back(sample.distance);
+                moving_average = beta * moving_average + (1 - beta) * sample.distance;
+            }
+            check_exit();
+        } catch (thread_aborted& e){
+            //
+        }
+    });
+    subscriber.detach();
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -66,6 +101,7 @@ SinSynth::SinSynth(AudioUnit inComponentInstance)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SinSynth::~SinSynth()
 {
+    exit_flag = true;
 }
 
 
@@ -187,7 +223,9 @@ OSStatus TestNote::Render(UInt64 inAbsoluteSampleFrame, UInt32 inNumFrames, Audi
             for (UInt32 frame=0; frame<inNumFrames; ++frame)
             {
                 if (amp < maxamp) amp += up_slope;
-                float out = pow5(sin(phase)) * amp * globalVol;
+                // float out = pow5(sin(phase)) * amp * globalVol;  // original
+                int idx = int(phase/twopi*buf_size);
+                float out = (c_buf[idx] - moving_average) / moving_average * amp * globalVol;
                 phase += freq;
                 if (phase > twopi) phase -= twopi;
                 left[frame] += out;
