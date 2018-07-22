@@ -90,6 +90,8 @@
 		929E1C49066E29DE00218B60 /* MusicDeviceBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 929E1C1D066E29DE00218B60 /* MusicDeviceBase.h */; };
 		929E1C4A066E29DE00218B60 /* AUBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 929E1C1F066E29DE00218B60 /* AUBuffer.cpp */; };
 		929E1C4B066E29DE00218B60 /* AUBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 929E1C20066E29DE00218B60 /* AUBuffer.h */; };
+		9DB7F0272104654000B26AFA /* libsweep.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DB7F0262104654000B26AFA /* libsweep.dylib */; };
+		9DB7F02A2104657B00B26AFA /* libsweep.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DB7F0292104657B00B26AFA /* libsweep.dylib */; };
 		A90305510D9B38B30041311E /* AUBaseHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A903054F0D9B38B30041311E /* AUBaseHelper.cpp */; };
 		A90305520D9B38B30041311E /* AUBaseHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = A90305500D9B38B30041311E /* AUBaseHelper.h */; };
 		A90305530D9B38B30041311E /* AUBaseHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A903054F0D9B38B30041311E /* AUBaseHelper.cpp */; };
@@ -123,7 +125,7 @@
 		442E2C9520EBCC44005076E5 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "/Users/kmotohas/Library/Audio/Plug-Ins/Components";
+			dstPath = "/Users/$(USER)/Library/Audio/Plug-Ins/Components";
 			dstSubfolderSpec = 0;
 			files = (
 				442E2C9620EBCC6E005076E5 /* SinSynth.component in CopyFiles */,
@@ -174,6 +176,8 @@
 		929E1C1D066E29DE00218B60 /* MusicDeviceBase.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MusicDeviceBase.h; sourceTree = "<group>"; };
 		929E1C1F066E29DE00218B60 /* AUBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = AUBuffer.cpp; sourceTree = "<group>"; };
 		929E1C20066E29DE00218B60 /* AUBuffer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AUBuffer.h; sourceTree = "<group>"; };
+		9DB7F0262104654000B26AFA /* libsweep.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsweep.dylib; path = ../../../../../usr/local/lib/libsweep.dylib; sourceTree = "<group>"; };
+		9DB7F0292104657B00B26AFA /* libsweep.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsweep.dylib; path = ../../../../../usr/local/lib/libsweep.dylib; sourceTree = "<group>"; };
 		A903054F0D9B38B30041311E /* AUBaseHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AUBaseHelper.cpp; sourceTree = "<group>"; };
 		A90305500D9B38B30041311E /* AUBaseHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AUBaseHelper.h; sourceTree = "<group>"; };
 		A919E37D088DC577008B8742 /* CAAudioChannelLayout.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CAAudioChannelLayout.cpp; sourceTree = "<group>"; };
@@ -207,6 +211,7 @@
 				4CC305960BD6DEBC008E97BD /* CoreMIDI.framework in Frameworks */,
 				4CC305930BD6DEBC008E97BD /* AudioUnit.framework in Frameworks */,
 				4CC305950BD6DEBC008E97BD /* AudioToolbox.framework in Frameworks */,
+				9DB7F0272104654000B26AFA /* libsweep.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,6 +222,7 @@
 				B86DD2BC17ED0F7800648F79 /* CoreFoundation.framework in Frameworks */,
 				929067AC061260B00065C650 /* AudioUnit.framework in Frameworks */,
 				A919E553088DCA5A008B8742 /* AudioToolbox.framework in Frameworks */,
+				9DB7F02A2104657B00B26AFA /* libsweep.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,11 +232,13 @@
 		089C166AFE841209C02AAC07 /* SinSynth */ = {
 			isa = PBXGroup;
 			children = (
+				9DB7F0292104657B00B26AFA /* libsweep.dylib */,
 				2BB9A5EA1C65571400B8A7CF /* ReadMe.md */,
 				08FB77ADFE841716C02AAC07 /* Source */,
 				089C167CFE841241C02AAC07 /* Resources */,
 				089C1671FE841209C02AAC07 /* External Frameworks and Libraries */,
 				19C28FB4FE9D528D11CA2CBB /* Products */,
+				9DB7F0252104654000B26AFA /* Frameworks */,
 			);
 			name = SinSynth;
 			sourceTree = "<group>";
@@ -356,6 +364,14 @@
 			name = PublicUtility;
 			path = ../PublicUtility;
 			sourceTree = SOURCE_ROOT;
+		};
+		9DB7F0252104654000B26AFA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9DB7F0262104654000B26AFA /* libsweep.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
 		};
 		A919E568088DCBC0008B8742 /* AUInstrumentBase */ = {
 			isa = PBXGroup;
@@ -636,8 +652,9 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				INFOPLIST_FILE = "SinSynthWithMIDI-Info.plist";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				LIBRARY_STYLE = BUNDLE;
 				OTHER_CFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -669,6 +686,7 @@
 				GCC_PREFIX_HEADER = SinSynth_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = "CA_USE_AUDIO_PLUGIN_ONLY=1";
 				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				OTHER_CFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DDEBUG",
@@ -687,7 +705,10 @@
 		A919E32D088DC18A008B8742 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
 				ENABLE_TESTABILITY = YES;
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DCA_AUTO_MIDI_MAP=1";
