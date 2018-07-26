@@ -55,6 +55,10 @@ AUDIOCOMPONENT_ENTRY(AUMusicDeviceFactory, SinSynth)
 
 static const AudioUnitParameterID kGlobalVolumeParam = 0;
 static const CFStringRef kGlobalVolumeName = CFSTR("global volume");
+static const AudioUnitParameterID kGlobalAmpAttackParam = 1;
+static const CFStringRef kGlobalAmpAttackName = CFSTR("VCA attack");
+static const AudioUnitParameterID kGlobalAmpReleaseParam = 2;
+static const CFStringRef kGlobalAmpReleaseName = CFSTR("VCA release");
 
 struct thread_aborted{};  // temporary exception class
 std::atomic<bool> exit_flag(false);
