@@ -20,7 +20,7 @@ struct TestNote : public SynthNote
 #if DEBUG_PRINT
         printf("TestNote::Attack %p %d\n", this, GetState());
 #endif
-        double sampleRate = SampleRate();
+        sampleRate = SampleRate();
         phase = 0.;
         amp = 0.;
         maxamp = 0.4 * pow(inParams.mVelocity/127., 3.);
@@ -35,7 +35,7 @@ struct TestNote : public SynthNote
     virtual Float32			Amplitude() { return amp; } // used for finding quietest note for voice stealing.
     virtual OSStatus		Render(UInt64 inAbsoluteSampleFrame, UInt32 inNumFrames, AudioBufferList** inBufferList, UInt32 inOutBusCount);
     
-    double phase, amp, maxamp;
+    double sampleRate, phase, amp, maxamp;
     double up_slope, dn_slope, fast_dn_slope;
 };
 

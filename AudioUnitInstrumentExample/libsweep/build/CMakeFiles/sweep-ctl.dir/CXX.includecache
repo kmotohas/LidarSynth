@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/sweep/sweep.h
+stdbool.h
+-
+stdint.h
+-
+sweep/config.h
+-
+assert.h
+-
+
+../include/sweep/sweep.hpp
+cstdint
+-
+memory
+-
+stdexcept
+-
+vector
+-
+sweep/sweep.h
+-
+
+/Users/kmotohas/work/sweep-sdk/libsweep/src/sweep-ctl.cc
+cinttypes
+-
+cstdio
+-
+cstdlib
+-
+string
+-
+vector
+-
+sweep/sweep.hpp
+-
+
+include/sweep/config.h
+

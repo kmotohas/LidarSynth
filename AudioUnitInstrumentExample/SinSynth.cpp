@@ -78,8 +78,10 @@ SinSynth::SinSynth(AudioUnit inComponentInstance)
 {
     CreateElements();
     
-    Globals()->UseIndexedParameters(1); // we're only defining one param
+    Globals()->UseIndexedParameters(3); // we're only defining one param
     Globals()->SetParameter (kGlobalVolumeParam, 1.0);
+    Globals()->SetParameter (kGlobalAmpAttackParam, 0.0);
+    Globals()->SetParameter (kGlobalAmpReleaseParam, 0.0);
     
     // subscriber Lidar values
     std::thread subscriber([](){
@@ -88,8 +90,10 @@ SinSynth::SinSynth(AudioUnit inComponentInstance)
         while (true) try {
             const sweep::scan scan = device.get_scan();
             for (const sweep::sample& sample : scan.samples) {
+                std::cout << sample.distance << std::endl;
                 c_buf.push_back(sample.distance);
-                moving_average = beta * moving_average + (1 - beta) * sample.distance;
+                // add 1. to avoid zero division error
+                moving_average = beta * moving_average + (1 - beta) * sample.distance + 1.;
             }
             check_exit();
         } catch (thread_aborted& e){
@@ -149,18 +153,50 @@ OSStatus SinSynth::GetParameterInfo(AudioUnitScope inScope,
                                     AudioUnitParameterID inParameterID,
                                     AudioUnitParameterInfo &outParameterInfo)
 {
-    if (inParameterID != kGlobalVolumeParam) return kAudioUnitErr_InvalidParameter;
-    if (inScope != kAudioUnitScope_Global) return kAudioUnitErr_InvalidScope;
-    
-    outParameterInfo.flags = SetAudioUnitParameterDisplayType (0, kAudioUnitParameterFlag_DisplaySquareRoot);
-    outParameterInfo.flags += kAudioUnitParameterFlag_IsWritable;
-    outParameterInfo.flags += kAudioUnitParameterFlag_IsReadable;
-    
-    AUBase::FillInParameterName (outParameterInfo, kGlobalVolumeName, false);
-    outParameterInfo.unit = kAudioUnitParameterUnit_LinearGain;
-    outParameterInfo.minValue = 0;
-    outParameterInfo.maxValue = 1.0;
-    outParameterInfo.defaultValue = 1.0;
+    if (inScope != kAudioUnitScope_Global) {
+        return kAudioUnitErr_InvalidScope;
+    } else {
+        switch (inParameterID) {
+            case kGlobalVolumeParam:
+                AUBase::FillInParameterName (outParameterInfo, kGlobalVolumeName, false);
+                outParameterInfo.flags = SetAudioUnitParameterDisplayType (0, kAudioUnitParameterFlag_DisplaySquareRoot);
+                outParameterInfo.flags += kAudioUnitParameterFlag_IsWritable;
+                outParameterInfo.flags += kAudioUnitParameterFlag_IsReadable;
+        
+                outParameterInfo.unit = kAudioUnitParameterUnit_LinearGain;
+                outParameterInfo.minValue = 0;
+                outParameterInfo.maxValue = 1.0;
+                outParameterInfo.defaultValue = 1.0;
+                break;
+                
+            case kGlobalAmpAttackParam:
+                AUBase::FillInParameterName (outParameterInfo, kGlobalAmpAttackName, false);
+                outParameterInfo.flags = SetAudioUnitParameterDisplayType (0, kAudioUnitParameterFlag_DisplaySquareRoot);
+                outParameterInfo.flags += kAudioUnitParameterFlag_IsWritable;
+                outParameterInfo.flags += kAudioUnitParameterFlag_IsReadable;
+                
+                outParameterInfo.unit = kAudioUnitParameterUnit_Seconds;
+                outParameterInfo.minValue = 0.001;
+                outParameterInfo.maxValue = 5.0;
+                outParameterInfo.defaultValue = 0.001;
+                break;
+            
+            case kGlobalAmpReleaseParam:
+                AUBase::FillInParameterName (outParameterInfo, kGlobalAmpReleaseName, false);
+                outParameterInfo.flags = SetAudioUnitParameterDisplayType (0, kAudioUnitParameterFlag_DisplaySquareRoot);
+                outParameterInfo.flags += kAudioUnitParameterFlag_IsWritable;
+                outParameterInfo.flags += kAudioUnitParameterFlag_IsReadable;
+                
+                outParameterInfo.unit = kAudioUnitParameterUnit_Seconds;
+                outParameterInfo.minValue = 0.001;
+                outParameterInfo.maxValue = 5.0;
+                outParameterInfo.defaultValue = 0.001;
+                break;
+                
+            default:
+                return kAudioUnitErr_InvalidParameter;
+        }
+    }
     return noErr;
 }
 
@@ -201,6 +237,8 @@ OSStatus TestNote::Render(UInt64 inAbsoluteSampleFrame, UInt32 inNumFrames, Audi
      Left as an exercise for the reader
      ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ */
     float globalVol = GetGlobalParameter(kGlobalVolumeParam);
+    float globalAmpAttack = GetGlobalParameter(kGlobalAmpAttackParam);
+    float globalAmpRelease = GetGlobalParameter(kGlobalAmpReleaseParam);
     
     // TestNote only writes into the first bus regardless of what is handed to us.
     const int bus0 = 0;
@@ -226,10 +264,18 @@ OSStatus TestNote::Render(UInt64 inAbsoluteSampleFrame, UInt32 inNumFrames, Audi
         {
             for (UInt32 frame=0; frame<inNumFrames; ++frame)
             {
-                if (amp < maxamp) amp += up_slope;
+                // if (amp < maxamp) amp += up_slope;
+                if (amp < maxamp) amp += maxamp / (sampleRate * globalAmpAttack);
+                if (amp > maxamp) amp = maxamp;
                 // float out = pow5(sin(phase)) * amp * globalVol;  // original
                 int idx = int(phase/twopi*buf_size);
-                float out = (c_buf[idx] - moving_average) / moving_average * amp * globalVol;
+                float val;
+                try {
+                    val = (c_buf[idx] < 1000) ? c_buf[idx] : 1000;
+                } catch (...) {
+                    val = 0.;
+                }
+                float out = (val - moving_average) / moving_average * amp * globalVol;
                 phase += freq;
                 if (phase > twopi) phase -= twopi;
                 left[frame] += out;
@@ -243,9 +289,19 @@ OSStatus TestNote::Render(UInt64 inAbsoluteSampleFrame, UInt32 inNumFrames, Audi
             UInt32 endFrame = 0xFFFFFFFF;
             for (UInt32 frame=0; frame<inNumFrames; ++frame)
             {
-                if (amp > 0.0) amp += dn_slope;
+                // if (amp > 0.0) amp += dn_slope;
+                if (amp > 0.0) amp -= maxamp / (sampleRate * globalAmpRelease);
                 else if (endFrame == 0xFFFFFFFF) endFrame = frame;
-                float out = pow5(sin(phase)) * amp * globalVol;
+                // float out = pow5(sin(phase)) * amp * globalVol;  // original
+                int idx = int(phase/twopi*buf_size);
+                float val;
+                try {
+                    val = (c_buf[idx] < 1000) ? c_buf[idx] : 1000;
+                } catch (...) {
+                    val = 0.;
+                }
+                float out = (val - moving_average) / moving_average * amp * globalVol;
+                // float out = (c_buf[idx] - moving_average) / moving_average * amp * globalVol;
                 phase += freq;
                 left[frame] += out;
                 if (right) right[frame] += out;
@@ -266,7 +322,16 @@ OSStatus TestNote::Render(UInt64 inAbsoluteSampleFrame, UInt32 inNumFrames, Audi
             {
                 if (amp > 0.0) amp += fast_dn_slope;
                 else if (endFrame == 0xFFFFFFFF) endFrame = frame;
-                float out = pow5(sin(phase)) * amp * globalVol;
+                // float out = pow5(sin(phase)) * amp * globalVol;  // original
+                int idx = int(phase/twopi*buf_size);
+                float val;
+                try {
+                    val = (c_buf[idx] < 1000) ? c_buf[idx] : 1000;
+                } catch (...) {
+                    val = 0.;
+                }
+                float out = (val - moving_average) / moving_average * amp * globalVol;
+                //float out = (c_buf[idx] - moving_average) / moving_average * amp * globalVol;
                 phase += freq;
                 left[frame] += out;
                 if (right) right[frame] += out;

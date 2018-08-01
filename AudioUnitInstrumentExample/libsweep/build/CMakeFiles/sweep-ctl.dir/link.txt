@@ -1,0 +1,1 @@
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++    -std=c++11 -Wall -Wextra -pedantic -fvisibility=hidden -fPIC -fno-rtti -O3 -DNDEBUG -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/sweep-ctl.dir/src/sweep-ctl.cc.o  -o sweep-ctl  libsweep.1.3.0.dylib 

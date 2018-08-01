@@ -1,0 +1,9 @@
+/usr/local/lib/libsweep.1.3.0.dylib
+/usr/local/lib/libsweep.1.dylib
+/usr/local/lib/libsweep.dylib
+/usr/local/include/sweep/sweep.h
+/usr/local/include/sweep/sweep.hpp
+/usr/local/include/sweep/config.h
+/usr/local/bin/sweep-ctl
+/usr/local/share/man/man1/sweep-ctl.1
+/usr/local/lib/cmake/sweep/SweepConfig.cmake

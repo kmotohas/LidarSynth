@@ -1,0 +1,1 @@
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++    -std=c++11 -Wall -Wextra -pedantic -O3 -DNDEBUG -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/example-viewer.dir/viewer.cc.o  -o example-viewer  /usr/local/lib/libsweep.dylib -lsfml-graphics -lsfml-window -lsfml-audio -lsfml-network -lsfml-system 

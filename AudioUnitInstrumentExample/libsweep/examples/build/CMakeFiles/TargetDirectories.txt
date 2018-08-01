@@ -1,0 +1,6 @@
+/Users/kmotohas/work/sweep-sdk/libsweep/examples/build/CMakeFiles/edit_cache.dir
+/Users/kmotohas/work/sweep-sdk/libsweep/examples/build/CMakeFiles/example-viewer.dir
+/Users/kmotohas/work/sweep-sdk/libsweep/examples/build/CMakeFiles/example-net.dir
+/Users/kmotohas/work/sweep-sdk/libsweep/examples/build/CMakeFiles/rebuild_cache.dir
+/Users/kmotohas/work/sweep-sdk/libsweep/examples/build/CMakeFiles/example-c.dir
+/Users/kmotohas/work/sweep-sdk/libsweep/examples/build/CMakeFiles/example-c++.dir

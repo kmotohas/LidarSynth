@@ -1,0 +1,22 @@
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc 
+Build flags: 
+Id flags: 
+
+The output was:
+1
+error: unable to open output file '/tmp/kmotohas/CMakeCCompilerId-890222.o': 'No such file or directory'
+1 error generated.
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ 
+Build flags: 
+Id flags: 
+
+The output was:
+1
+error: unable to open output file '/tmp/kmotohas/CMakeCXXCompilerId-83e3e8.o': 'No such file or directory'
+1 error generated.
+
+
